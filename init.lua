@@ -1,5 +1,8 @@
+local function disable_formatting(client)
+		client.resolved_capabilities.document_formatting = false
+		client.resolved_capabilities.document_range_formatting = false
+	end
 local config = {
-
   -- Configure AstroNvim updates
   updater = {
     remote = "origin", -- remote to use
@@ -17,51 +20,18 @@ local config = {
     -- },
   },
 
+
   -- Set colorscheme
   colorscheme = "onedark",
 
   -- set vim options here (vim.<first_key>.<second_key> =  value)
   options = {
     opt = {
-      relativenumber = true, -- sets vim.opt.relativenumber
+      relativenumber = false, -- sets vim.opt.relativenumber
+      number = false,
     },
     g = {
       mapleader = " ", -- sets vim.g.mapleader
-    },
-  },
-
-  -- Default theme configuration
-  default_theme = {
-    diagnostics_style = { italic = true },
-    -- Modify the color table
-    colors = {
-      fg = "#abb2bf",
-    },
-    -- Modify the highlight groups
-    highlights = function(highlights)
-      local C = require "default_theme.colors"
-
-      highlights.Normal = { fg = C.fg, bg = C.bg }
-      return highlights
-    end,
-    plugins = { -- enable or disable extra plugin highlighting
-      aerial = true,
-      beacon = false,
-      bufferline = true,
-      dashboard = true,
-      highlighturl = true,
-      hop = false,
-      indent_blankline = true,
-      lightspeed = false,
-      ["neo-tree"] = true,
-      notify = true,
-      ["nvim-tree"] = false,
-      ["nvim-web-devicons"] = true,
-      rainbow = true,
-      symbols_outline = false,
-      telescope = true,
-      vimwiki = false,
-      ["which-key"] = true,
     },
   },
 
@@ -74,30 +44,45 @@ local config = {
   -- Configure plugins
   plugins = {
     -- Add plugins, the packer syntax without the "use"
-
     init = {
+      {
+        "folke/trouble.nvim",
+        config = function()
+          require("trouble").setup {
+          }
+        end
+      },
+      {
+        'nvim-treesitter/nvim-treesitter-context',
+      },
+      {
+        'beauwilliams/focus.nvim',
+        config = function() require("focus").setup() end
+      },
+      {
+        's1n7ax/nvim-window-picker',
+        tag = 'v1.*',
+        config = function()
+          require'window-picker'.setup()
+        end,
+      },
+      {
+        'ggandor/lightspeed.nvim'
+      },
       {
        "navarasu/onedark.nvim",
         as = "onedark",
         config = function()
           require('onedark').setup {
-            style = 'warm'
+            style = 'dark'
           }
           require('onedark').load()
         end,
       },
+      ["declancm/cinnamon.nvim"] = { disable = true },
       -- You can disable default plugins as follows:
       -- ["goolord/alpha-nvim"] = { disable = true },
 
-      -- You can also add new plugins here as well:
-      -- { "andweeb/presence.nvim" },
-      -- {
-      --   "ray-x/lsp_signature.nvim",
-      --   event = "BufRead",
-      --   config = function()
-      --     require("lsp_signature").setup()
-      --   end,
-      -- },
     },
     -- All other entries override the setup() call for default plugins
     ["null-ls"] = function(config)
@@ -107,6 +92,7 @@ local config = {
       -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
       config.sources = {
         -- Set a formatter
+        null_ls.builtins.formatting.eslint_d,
         null_ls.builtins.formatting.rufo,
         -- Set a linter
         null_ls.builtins.diagnostics.rubocop,
@@ -118,7 +104,7 @@ local config = {
           vim.api.nvim_create_autocmd("BufWritePre", {
             desc = "Auto format before save",
             pattern = "<buffer>",
-            callback = vim.lsp.buf.formatting_sync,
+            callback = function () vim.lsp.buf.formatting_sync(nil, 2000) end,
           })
         end
       end
@@ -198,18 +184,18 @@ local config = {
 
     -- Add overrides for LSP server settings, the keys are the name of the server
     ["server-settings"] = {
-      -- example for addings schemas to yamlls
-      -- yamlls = {
-      --   settings = {
-      --     yaml = {
-      --       schemas = {
-      --         ["http://json.schemastore.org/github-workflow"] = ".github/workflows/*.{yml,yaml}",
-      --         ["http://json.schemastore.org/github-action"] = ".github/action.{yml,yaml}",
-      --         ["http://json.schemastore.org/ansible-stable-2.9"] = "roles/tasks/*.{yml,yaml}",
-      --       },
-      --     },
-      --   },
-      -- },
+      tsserver = {
+        root_dir = require('lspconfig.util').find_git_ancestor,
+      },
+      eslint = {
+        on_attach = disable_formatting,
+        settings = {
+          workingDirectories = {
+            { mode = 'location' }
+          }
+        },
+        root_dir = require('lspconfig.util').find_git_ancestor,
+      },
     },
   },
 
@@ -222,6 +208,7 @@ local config = {
   mappings = {
     -- first key is the mode
     n = {
+      ["tn"]= { ":tabnew<cr>", desc="New Tab"},
       -- second key is the lefthand side of the map
       ["<C-s>"] = { ":w!<cr>", desc = "Save File" },
     },
