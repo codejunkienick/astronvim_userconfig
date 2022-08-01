@@ -1,3 +1,5 @@
+
+
 local function disable_formatting(client)
 		client.resolved_capabilities.document_formatting = false
 		client.resolved_capabilities.document_range_formatting = false
@@ -37,14 +39,15 @@ local config = {
 
   -- Disable AstroNvim ui features
   ui = {
-    nui_input = true,
-    telescope_select = true,
+    -- nui_input = true,
+    -- telescope_select = true,
   },
 
   -- Configure plugins
   plugins = {
     -- Add plugins, the packer syntax without the "use"
     init = {
+
       {
         "folke/trouble.nvim",
         config = function()
@@ -85,6 +88,16 @@ local config = {
 
     },
     -- All other entries override the setup() call for default plugins
+    ["telescope"] = function(config)
+			local telescope_actions = require "telescope.actions"
+      -- Check supported formatters and linters
+      -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
+      -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
+      config.defaults.mappings.n['<C-q>'] = telescope_actions.close
+      config.defaults.mappings.i['<C-q>'] = telescope_actions.close
+
+      return config -- return final config table
+    end,
     ["null-ls"] = function(config)
       local null_ls = require "null-ls"
       -- Check supported formatters and linters
@@ -93,9 +106,10 @@ local config = {
       config.sources = {
         -- Set a formatter
         null_ls.builtins.formatting.eslint_d,
-        null_ls.builtins.formatting.rufo,
         -- Set a linter
-        null_ls.builtins.diagnostics.rubocop,
+        null_ls.builtins.diagnostics.eslint_d,
+        null_ls.builtins.code_actions.eslint_d,
+				-- null_ls.builtins.diagnostics.codespell,
       }
       -- set up null-ls's on_attach function
       config.on_attach = function(client)
@@ -104,7 +118,7 @@ local config = {
           vim.api.nvim_create_autocmd("BufWritePre", {
             desc = "Auto format before save",
             pattern = "<buffer>",
-            callback = function () vim.lsp.buf.formatting_sync(nil, 2000) end,
+            callback = function () vim.lsp.buf.formatting_sync(nil, 3000) end,
           })
         end
       end
@@ -119,6 +133,7 @@ local config = {
     packer = {
       compile_path = vim.fn.stdpath "data" .. "/packer_compiled.lua",
     },
+
   },
 
   -- LuaSnip Options
