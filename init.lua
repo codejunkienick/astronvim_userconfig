@@ -30,7 +30,7 @@ local config = {
   options = {
     opt = {
       relativenumber = false, -- sets vim.opt.relativenumber
-      number = false,
+      -- number = false,
     },
     g = {
       mapleader = " ", -- sets vim.g.mapleader
@@ -58,10 +58,10 @@ local config = {
       {
         'nvim-treesitter/nvim-treesitter-context',
       },
-      {
-        'beauwilliams/focus.nvim',
-        config = function() require("focus").setup() end
-      },
+      -- {
+      --   'beauwilliams/focus.nvim',
+      --   config = function() require("focus").setup({number = false, treewidth = 40}) end
+      -- },
       {
         's1n7ax/nvim-window-picker',
         tag = 'v1.*',
@@ -87,31 +87,23 @@ local config = {
       -- ["goolord/alpha-nvim"] = { disable = true },
 
     },
-    -- All other entries override the setup() call for default plugins
+    ["neo-tree"] = function(config)
+    	config.close_if_last_window = false
+      return config
+    end,
     ["telescope"] = function(config)
 			local telescope_actions = require "telescope.actions"
-      -- Check supported formatters and linters
-      -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
-      -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
       config.defaults.mappings.n['<C-q>'] = telescope_actions.close
       config.defaults.mappings.i['<C-q>'] = telescope_actions.close
-
-      return config -- return final config table
+      return config
     end,
     ["null-ls"] = function(config)
       local null_ls = require "null-ls"
-      -- Check supported formatters and linters
-      -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/formatting
-      -- https://github.com/jose-elias-alvarez/null-ls.nvim/tree/main/lua/null-ls/builtins/diagnostics
       config.sources = {
-        -- Set a formatter
         null_ls.builtins.formatting.eslint_d,
-        -- Set a linter
         null_ls.builtins.diagnostics.eslint_d,
         null_ls.builtins.code_actions.eslint_d,
-				-- null_ls.builtins.diagnostics.codespell,
       }
-      -- set up null-ls's on_attach function
       config.on_attach = function(client)
         -- NOTE: You can remove this on attach function to disable format on save
         if client.resolved_capabilities.document_formatting then
@@ -122,7 +114,7 @@ local config = {
           })
         end
       end
-      return config -- return final config table
+      return config
     end,
     treesitter = {
       ensure_installed = { "lua" },
