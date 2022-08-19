@@ -1,9 +1,7 @@
-
-
 local function disable_formatting(client)
-		client.resolved_capabilities.document_formatting = false
-		client.resolved_capabilities.document_range_formatting = false
-	end
+  client.resolved_capabilities.document_formatting = false
+  client.resolved_capabilities.document_range_formatting = false
+end
 local config = {
   -- Configure AstroNvim updates
   updater = {
@@ -22,7 +20,6 @@ local config = {
     -- },
   },
 
-
   -- Set colorscheme
   colorscheme = "onedark",
 
@@ -33,9 +30,9 @@ local config = {
       -- number = false,
     },
     g = {
-			-- neomake_typescript_enabled_makers = {'eslint'},
-			-- neomake_eslint_exe = 'eslint_d',
-			neomake_open_list = 2,
+      -- neomake_typescript_enabled_makers = {'eslint'},
+      -- neomake_eslint_exe = 'eslint_d',
+      neomake_open_list = 2,
       mapleader = " ", -- sets vim.g.mapleader
     },
   },
@@ -50,69 +47,74 @@ local config = {
   plugins = {
     -- Add plugins, the packer syntax without the "use"
     init = {
-    	{'neomake/neomake'},
-    	{
-				'kevinhwang91/nvim-bqf', 
-				config = function()
-          require("bqf").setup {
-    				auto_enable = true,
-    				auto_resize_height = true, -- highly recommended enable
+      {
+        "David-Kunz/jester",
+        config = function()
+          require("jester").setup {
+            path_to_jest_debug = "./node_modules/.bin/jest",
+            path_to_jest_run = "./node_modules/.bin/jest",
           }
-        end
-    	},
+        end,
+      },
+      { "mfussenegger/nvim-dap" },
+      { "neomake/neomake" },
+      {
+        "kevinhwang91/nvim-bqf",
+        config = function()
+          require("bqf").setup {
+            auto_enable = true,
+            auto_resize_height = true, -- highly recommended enable
+          }
+        end,
+      },
 
       {
         "folke/trouble.nvim",
-        config = function()
-          require("trouble").setup {
-          }
-        end
+        config = function() require("trouble").setup {} end,
       },
       {
-        'nvim-treesitter/nvim-treesitter-context',
+        "nvim-treesitter/nvim-treesitter-context",
       },
       -- {
       --   'beauwilliams/focus.nvim',
       --   config = function() require("focus").setup({number = false, treewidth = 40}) end
       -- },
       {
-        's1n7ax/nvim-window-picker',
-        tag = 'v1.*',
-        config = function()
-          require'window-picker'.setup()
-        end,
+        "s1n7ax/nvim-window-picker",
+        tag = "v1.*",
+        config = function() require("window-picker").setup() end,
       },
       {
-        'ggandor/lightspeed.nvim'
+        "ggandor/lightspeed.nvim",
       },
       {
-       "navarasu/onedark.nvim",
+        "navarasu/onedark.nvim",
         as = "onedark",
         config = function()
-          require('onedark').setup {
-            style = 'dark'
+          require("onedark").setup {
+            style = "dark",
           }
-          require('onedark').load()
+          require("onedark").load()
         end,
       },
       ["declancm/cinnamon.nvim"] = { disable = true },
       -- You can disable default plugins as follows:
       -- ["goolord/alpha-nvim"] = { disable = true },
-
     },
     ["neo-tree"] = function(config)
-    	config.close_if_last_window = false
+      config.close_if_last_window = false
       return config
     end,
     ["telescope"] = function(config)
-			local telescope_actions = require "telescope.actions"
-      config.defaults.mappings.n['<C-q>'] = telescope_actions.close
-      config.defaults.mappings.i['<C-q>'] = telescope_actions.close
+      local telescope_actions = require "telescope.actions"
+      config.defaults.mappings.n["<C-q>"] = telescope_actions.close
+      config.defaults.mappings.i["<C-q>"] = telescope_actions.close
       return config
     end,
     ["null-ls"] = function(config)
       local null_ls = require "null-ls"
       config.sources = {
+        null_ls.builtins.formatting.stylua,
         null_ls.builtins.formatting.eslint_d,
         null_ls.builtins.diagnostics.eslint_d,
         null_ls.builtins.code_actions.eslint_d,
@@ -123,7 +125,7 @@ local config = {
           vim.api.nvim_create_autocmd("BufWritePre", {
             desc = "Auto format before save",
             pattern = "<buffer>",
-            callback = function () vim.lsp.buf.formatting_sync(nil, 3000) end,
+            callback = function() vim.lsp.buf.formatting_sync(nil, 3000) end,
           })
         end
       end
@@ -138,7 +140,6 @@ local config = {
     packer = {
       compile_path = vim.fn.stdpath "data" .. "/packer_compiled.lua",
     },
-
   },
 
   -- LuaSnip Options
@@ -205,16 +206,16 @@ local config = {
     -- Add overrides for LSP server settings, the keys are the name of the server
     ["server-settings"] = {
       tsserver = {
-        root_dir = require('lspconfig.util').find_git_ancestor,
+        root_dir = require("lspconfig.util").find_git_ancestor,
       },
       eslint = {
         on_attach = disable_formatting,
         settings = {
           workingDirectories = {
-            { mode = 'location' }
-          }
+            { mode = "location" },
+          },
         },
-        root_dir = require('lspconfig.util').find_git_ancestor,
+        root_dir = require("lspconfig.util").find_git_ancestor,
       },
     },
   },
@@ -228,11 +229,22 @@ local config = {
   mappings = {
     -- first key is the mode
     n = {
-    	["<leader>lT"] = { ":Trouble workspace_diagnostics<cr>", desc="Open Trouble Workspace Diagnostics"},
-    	["<leader>lt"] = { ":Trouble document_diagnostics<cr>", desc="Open Trouble Document"},
-      ["tn"]= { ":tabnew<cr>", desc="New Tab"},
-      -- second key is the lefthand side of the map
+      -- General
+      ["tn"] = { ":tabnew<cr>", desc = "New Tab" },
       ["<C-s>"] = { ":w!<cr>", desc = "Save File" },
+
+      -- Jest
+      ["<leader>jr"] = { function() require("jester").run() end, desc = "Jest: Run nearest test under the cursor" },
+      ["<leader>jR"] = {
+        function() require("jester").run_debug() end,
+        desc = "Jest: Debug Run nearest test under the cursor",
+      },
+      ["<leader>jf"] = { function() require("jester").run_file() end, desc = "Jest: Run file" },
+      ["<leader>jF"] = { function() require("jester").debug_file() end, desc = "Jest: Debug Run file" },
+
+      -- Trouble
+      ["<leader>lT"] = { ":Trouble workspace_diagnostics<cr>", desc = "Open Trouble Workspace Diagnostics" },
+      ["<leader>lt"] = { ":Trouble document_diagnostics<cr>", desc = "Open Trouble Document" },
     },
     t = {
       -- setting a mapping to false will disable it
@@ -243,8 +255,6 @@ local config = {
   -- This function is run last
   -- good place to configuring augroups/autocommands and custom filetypes
   polish = function()
-    -- Set key binding
-    -- Set autocommands
     vim.api.nvim_create_augroup("packer_conf", { clear = true })
     vim.api.nvim_create_autocmd("BufWritePost", {
       desc = "Sync packer after modifying plugins.lua",
@@ -252,19 +262,6 @@ local config = {
       pattern = "plugins.lua",
       command = "source <afile> | PackerSync",
     })
-
-    -- Set up custom filetypes
-    -- vim.filetype.add {
-    --   extension = {
-    --     foo = "fooscript",
-    --   },
-    --   filename = {
-    --     ["Foofile"] = "fooscript",
-    --   },
-    --   pattern = {
-    --     ["~/%.config/foo/.*"] = "fooscript",
-    --   },
-    -- }
   end,
 }
 
