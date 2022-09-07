@@ -75,10 +75,16 @@ local config = {
       {
         "nvim-treesitter/nvim-treesitter-context",
       },
-      -- {
-      --   'beauwilliams/focus.nvim',
-      --   config = function() require("focus").setup({number = false, treewidth = 40}) end
-      -- },
+      {
+        "beauwilliams/focus.nvim",
+        config = function()
+          require("focus").setup {
+            excluded_filetypes = { "toggleterm" },
+            excluded_buftypes = { "nofile", "prompt", "popup", "quickfix" },
+            treewidth = 40,
+          }
+        end,
+      },
       {
         "s1n7ax/nvim-window-picker",
         tag = "v1.*",
@@ -115,7 +121,10 @@ local config = {
       local null_ls = require "null-ls"
       config.sources = {
         null_ls.builtins.formatting.stylua,
-        null_ls.builtins.formatting.eslint_d,
+        null_ls.builtins.formatting.eslint_d.with {
+          timeout = 10000,
+          filetypes = { "javascript", "javascriptreact", "json", "typescript", "typescriptreact", "vue" },
+        },
         null_ls.builtins.diagnostics.eslint_d,
         null_ls.builtins.code_actions.eslint_d,
       }
@@ -125,7 +134,7 @@ local config = {
           vim.api.nvim_create_autocmd("BufWritePre", {
             desc = "Auto format before save",
             pattern = "<buffer>",
-            callback = function() vim.lsp.buf.formatting_sync(nil, 3000) end,
+            callback = function() vim.lsp.buf.formatting_sync(nil, 10000) end,
           })
         end
       end
