@@ -47,6 +47,8 @@ local config = {
   plugins = {
     -- Add plugins, the packer syntax without the "use"
     init = {
+      { "folke/twilight.nvim" },
+      { "folke/zen-mode.nvim" },
       {
         "David-Kunz/jester",
         config = function()
@@ -241,6 +243,9 @@ local config = {
       -- General
       ["tn"] = { ":tabnew<cr>", desc = "New Tab" },
       ["<C-s>"] = { ":w!<cr>", desc = "Save File" },
+
+      -- Zen
+      ["<leader>k"] = { function() require("zen-mode").toggle() end, desc = "Get into zen" },
 
       -- Jest
       ["<leader>jr"] = { function() require("jester").run() end, desc = "Jest: Run nearest test under the cursor" },
