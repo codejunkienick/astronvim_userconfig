@@ -20,10 +20,8 @@ local config = {
     -- },
   },
 
-  -- Set colorscheme
   colorscheme = "onedark",
 
-  -- set vim options here (vim.<first_key>.<second_key> =  value)
   options = {
     opt = {
       relativenumber = false, -- sets vim.opt.relativenumber
@@ -37,16 +35,9 @@ local config = {
     },
   },
 
-  -- Disable AstroNvim ui features
-  ui = {
-    -- nui_input = true,
-    -- telescope_select = true,
-  },
-
-  -- Configure plugins
   plugins = {
-    -- Add plugins, the packer syntax without the "use"
     init = {
+      { "sindrets/diffview.nvim" },
       {
         "David-Kunz/jester",
         config = function()
@@ -151,17 +142,13 @@ local config = {
     },
   },
 
-  -- LuaSnip Options
   luasnip = {
-    -- Add paths for including more VS Code style snippets in luasnip
     vscode_snippet_paths = {},
-    -- Extend filetypes
     filetype_extend = {
       javascript = { "javascriptreact" },
     },
   },
 
-  -- Modify which-key registration
   ["which-key"] = {
     -- Add bindings
     register_mappings = {
@@ -169,8 +156,7 @@ local config = {
       n = {
         -- second key is the prefix, <leader> prefixes
         ["<leader>"] = {
-          -- which-key registration table for normal mode, leader prefix
-          -- ["N"] = { "<cmd>tabnew<cr>", "New Buffer" },
+          j = { name = "Jest" },
         },
       },
     },
@@ -238,10 +224,12 @@ local config = {
   mappings = {
     -- first key is the mode
     n = {
+      -- Git
+      ["<leader>gd"] = { "<cmd>DiffviewFileHistory %<cr>", desc = "View File history (Diffview)" },
+
       -- General
       ["tn"] = { ":tabnew<cr>", desc = "New Tab" },
       ["<C-s>"] = { ":w!<cr>", desc = "Save File" },
-
       -- Jest
       ["<leader>jr"] = { function() require("jester").run() end, desc = "Jest: Run nearest test under the cursor" },
       ["<leader>jR"] = {
