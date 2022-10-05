@@ -28,6 +28,7 @@ local config = {
       -- number = false,
     },
     g = {
+      instant_username = "Sneaky",
       -- neomake_typescript_enabled_makers = {'eslint'},
       -- neomake_eslint_exe = 'eslint_d',
       neomake_open_list = 2,
@@ -37,6 +38,7 @@ local config = {
 
   plugins = {
     init = {
+      { "jbyuki/instant.nvim" },
       { "sindrets/diffview.nvim" },
       { "folke/twilight.nvim" },
       { "folke/zen-mode.nvim" },
@@ -110,14 +112,31 @@ local config = {
       config.defaults.mappings.i["<C-q>"] = telescope_actions.close
       return config
     end,
+    ["bufferline"] = function(config)
+      config.max_name_length = 18
+      config.max_prefix_length = 13
+      config.tab_size = 24
+      config.diagnostics = "nvim_lsp"
+      config.separator_style = "thick"
+      config.sort_by = "relative_directory"
+      config.name_formatter = function(buf) -- buf contains:
+        if buf.name:match "index" then
+          return vim.fn.fnamemodify(buf.path, ":p:h:t") .. "/i." .. vim.fn.fnamemodify(buf.path, ":e")
+        end
+        return buf.name
+      end
+      config.custom_filter = function(buf, buf_nums) return not vim.fn.bufname(buf):match "node_modules" end
+    end,
     ["null-ls"] = function(config)
       local null_ls = require "null-ls"
       config.sources = {
         null_ls.builtins.formatting.stylua,
-        null_ls.builtins.formatting.eslint_d.with {
-          timeout = 10000,
-          filetypes = { "javascript", "javascriptreact", "json", "typescript", "typescriptreact", "vue" },
-        },
+        null_ls.builtins.formatting.prettierd,
+        -- null_ls.builtins.formatting.eslint_d,
+        -- null_ls.builtins.formatting.eslint_d.with {
+        --   timeout = 10000,
+        --   filetypes = { "javascript", "javascriptreact", "json", "typescript", "typescriptreact", "vue" },
+        -- },
         null_ls.builtins.diagnostics.eslint_d,
         null_ls.builtins.code_actions.eslint_d,
       }
@@ -127,7 +146,7 @@ local config = {
           vim.api.nvim_create_autocmd("BufWritePre", {
             desc = "Auto format before save",
             pattern = "<buffer>",
-            callback = function() vim.lsp.buf.formatting_sync(nil, 10000) end,
+            callback = function() vim.lsp.buf.formatting_sync(nil, 2000) end,
           })
         end
       end
