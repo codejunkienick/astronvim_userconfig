@@ -101,6 +101,12 @@ local config = {
       config.close_if_last_window = false
       return config
     end,
+    ["feline"] = function(config)
+      local felineConfig = require "user/user_configs/feline"
+      config.components = felineConfig.components
+      config.theme = felineConfig.theme
+      return config
+    end,
     ["telescope"] = function(config)
       local telescope_actions = require "telescope.actions"
       config.defaults.mappings.n["<C-q>"] = telescope_actions.close
@@ -108,19 +114,20 @@ local config = {
       return config
     end,
     ["bufferline"] = function(config)
-      config.max_name_length = 18
-      config.max_prefix_length = 13
-      config.tab_size = 24
-      config.diagnostics = "nvim_lsp"
-      config.separator_style = "thick"
-      config.sort_by = "relative_directory"
-      config.name_formatter = function(buf) -- buf contains:
+      config.options.max_name_length = 18
+      config.options.max_prefix_length = 13
+      config.options.tab_size = 24
+      config.options.diagnostics = "nvim_lsp"
+      config.options.separator_style = "thick"
+      config.options.sort_by = "relative_directory"
+      config.options.name_formatter = function(buf) -- buf contains:
         if buf.name:match "index" then
-          return vim.fn.fnamemodify(buf.path, ":p:h:t") .. "/i." .. vim.fn.fnamemodify(buf.path, ":e")
+          return vim.fn.fnamemodify(buf.path, ":p:h:t") .. "/." .. vim.fn.fnamemodify(buf.path, ":e")
         end
         return buf.name
       end
-      config.custom_filter = function(buf, buf_nums) return not vim.fn.bufname(buf):match "node_modules" end
+      config.options.custom_filter = function(buf) return not vim.fn.bufname(buf):match "node_modules" end
+      return config
     end,
     ["null-ls"] = function(config)
       local null_ls = require "null-ls"
