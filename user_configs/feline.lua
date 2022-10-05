@@ -60,7 +60,7 @@ local function get_unique_filename(filename, other_filenames)
   local filename_reversed = reverse_filename(filename)
   local same_until_map = vim.tbl_map(function(second) return same_until(filename_reversed, second) end, others_reversed)
 
-  local max = 0
+  local max = 2
   for _, v in ipairs(same_until_map) do
     if v > max then max = v end
   end
@@ -69,7 +69,7 @@ local function get_unique_filename(filename, other_filenames)
     if filename_reversed[i] then rv = rv .. filename_reversed[i] end
   end
 
-  if rv:match "index" and max < 2 and filename_reversed[2] then rv = filename_reversed[2] .. rv end
+  -- if rv:match "index" and max < 2 and filename_reversed[2] then rv = filename_reversed[2] .. rv end
 
   for i = #filename_reversed, 1, -1 do
     if
@@ -78,7 +78,7 @@ local function get_unique_filename(filename, other_filenames)
       and filename_reversed[i - 1]
       and not rv:match(filename_reversed[i - 1])
     then
-      rv = filename_reversed[i - 1]:sub(1, -2) .. " ... " .. rv
+      rv = filename_reversed[i - 1]:sub(1, -2) .. "  " .. rv
     end
   end
 
@@ -218,13 +218,6 @@ local c = {
     left_sep = "block",
     right_sep = "block",
   },
-  scroll_bar = {
-    provider = "scroll_bar",
-    hl = {
-      fg = "yellow",
-      style = "bold",
-    },
-  },
 }
 
 local left = {
@@ -248,7 +241,6 @@ local right = {
   c.file_type,
   c.position,
   c.line_percentage,
-  c.scroll_bar,
 }
 
 local components = {
