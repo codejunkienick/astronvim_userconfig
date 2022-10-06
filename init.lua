@@ -15,7 +15,7 @@ local config = {
 
   options = {
     opt = {
-      spell = true,
+      spell = false,
       signcolumn = "auto",
       relativenumber = false,
     },
@@ -64,7 +64,7 @@ local config = {
   heirline = {
     separators = {
       left = { "", " " },
-      right = { " ", "" },
+      right = { "  ", "" },
     },
     -- add new colors that can be used by heirline
     colors = {
@@ -74,7 +74,6 @@ local config = {
       folder_icon_bg = "#ec5f67",
     },
   },
-
 
   plugins = {
     init = {

@@ -23,13 +23,6 @@ local function reverse_filename(filename)
   return parents
 end
 
-local function same_until(first, second)
-  for i = 1, #first do
-    if first[i] ~= second[i] then return i end
-  end
-  return 1
-end
-
 local function getWorkspaceFolder()
   local filename = vim.api.nvim_buf_get_name(0)
   local rv = ""
@@ -111,19 +104,19 @@ return function(config)
       -- define a simple component where the provider is just a folder icon
       astronvim.status.component.builder {
         -- astronvim.get_icon gets the user interface icon for a closed folder with a space after it
-        { provider = astronvim.get_icon "FolderClosed" },
+        { provider = " " .. astronvim.get_icon "FolderClosed" },
         -- add padding after icon
-        padding = { right = 1 },
+        padding = { right = 1, left =1  },
         -- set the foreground color to be used for the icon
         hl = { fg = "bg" },
         -- use the right separator and define the background color
-        surround = { separator = "right", color = "folder_icon_bg" },
+        surround = { separator = "none", color = "folder_icon_bg" },
       },
       -- add a file information component and only show the current working directory name
       astronvim.status.component.builder {
         -- we only want filename to be used and we can change the fname
         -- function to get the current working directory name
-        { provider =  function() return  ' ' .. getWorkspaceFolder() .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t") end },
+        { provider =  function() return  ' ' .. getWorkspaceFolder() .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t") .. ' ' end },
         -- disable all other elements of the file_info component
         padding = { left = 0, right = 0 },
         hl = { fg = "fg" },
@@ -137,14 +130,14 @@ return function(config)
     { -- make nav section with icon border
       -- define a custom component with just a file icon
       astronvim.status.component.builder {
-        { provider = astronvim.get_icon "DefaultFile" },
+        { provider = " " .. astronvim.get_icon "DefaultFile" },
         -- add padding after icon
         padding = { right = 1 },
         -- set the icon foreground
         hl = { fg = "bg" },
         -- use the right separator and define the background color
         -- as well as the color to the left of the separator
-        surround = { separator = "right", color = { main = "nav_icon_bg", left = "file_info_bg" } },
+        surround = { separator = "none", color = { main = "nav_icon_bg", left = "file_info_bg" } },
       },
       -- add a navigation component and just display the percentage of progress in the file
       astronvim.status.component.nav {
