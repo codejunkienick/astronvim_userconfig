@@ -2,22 +2,14 @@ local function disable_formatting(client)
   client.resolved_capabilities.document_formatting = false
   client.resolved_capabilities.document_range_formatting = false
 end
+
 local config = {
   -- Configure AstroNvim updates
   updater = {
-    remote = "origin", -- remote to use
-    channel = "nightly", -- "stable" or "nightly"
-    version = "latest", -- "latest", tag name, or regex search like "v1.*" to only do updates before v2 (STABLE ONLY)
-    branch = "main", -- branch name (NIGHTLY ONLY)
-    commit = nil, -- commit hash (NIGHTLY ONLY)
-    pin_plugins = nil, -- nil, true, false (nil will pin plugins on stable only)
-    skip_prompts = false, -- skip prompts about breaking changes
-    show_changelog = true, -- show the changelog after performing an update
-    -- remotes = { -- easily add new remotes to track
-    --   ["remote_name"] = "https://remote_url.come/repo.git", -- full remote url
-    --   ["remote2"] = "github_user/repo", -- GitHub user/repo shortcut,
-    --   ["remote3"] = "github_user", -- GitHub user assume AstroNvim fork
-    -- },
+    channel = "nightly",
+    branch = "nightly",
+    auto_reload = false,
+    auto_quit = false,
   },
 
   colorscheme = "onedark",
@@ -33,6 +25,21 @@ local config = {
       -- neomake_eslint_exe = 'eslint_d',
       neomake_open_list = 2,
       mapleader = " ", -- sets vim.g.mapleader
+    },
+  },
+
+  heirline = {
+    -- define the separators between each section
+    separators = {
+      left = { "", " " }, -- separator for the left side of the statusline
+      right = { " ", "" }, -- separator for the right side of the statusline
+    },
+    -- add new colors that can be used by heirline
+    colors = {
+      blank_bg = "#5c6370",
+      file_info_bg = "#3e4452",
+      nav_icon_bg = "#89b06d",
+      folder_icon_bg = "#ec5f67",
     },
   },
 
@@ -97,14 +104,9 @@ local config = {
       -- You can disable default plugins as follows:
       -- ["goolord/alpha-nvim"] = { disable = true },
     },
+    heirline = require('user/user_configs/heirline'),
     ["neo-tree"] = function(config)
       config.close_if_last_window = false
-      return config
-    end,
-    ["feline"] = function(config)
-      local felineConfig = require "user/user_configs/feline"
-      config.components = felineConfig.components
-      config.theme = felineConfig.theme
       return config
     end,
     ["telescope"] = function(config)
@@ -138,27 +140,24 @@ local config = {
         -- null_ls.builtins.formatting.eslint_d.with {
         --   timeout = 10000,
         --   filetypes = { "javascript", "javascriptreact", "json", "typescript", "typescriptreact", "vue" },
-        -- },
+        -- },jk
         null_ls.builtins.diagnostics.eslint_d,
         null_ls.builtins.code_actions.eslint_d,
       }
-      config.on_attach = function(client)
-        -- NOTE: You can remove this on attach function to disable format on save
-        if client.resolved_capabilities.document_formatting then
-          vim.api.nvim_create_autocmd("BufWritePre", {
-            desc = "Auto format before save",
-            pattern = "<buffer>",
-            callback = function() vim.lsp.buf.formatting_sync(nil, 2000) end,
-          })
-        end
-      end
+      -- config.on_attach = function(client)
+      --   -- NOTE: You can remove this on attach function to disable format on save
+      --   if client.resolved_capabilities.document_formatting then
+      --     vim.api.nvim_create_autocmd("BufWritePre", {
+      --       desc = "Auto format before save",
+      --       pattern = "<buffer>",
+      --       callback = function() vim.lsp.buf.formatting_sync(nil, 2000) end,
+      --     })
+      --   end
+      -- end
       return config
     end,
     treesitter = {
       ensure_installed = { "lua" },
-    },
-    ["nvim-lsp-installer"] = {
-      ensure_installed = { "sumneko_lua" },
     },
     packer = {
       compile_path = vim.fn.stdpath "data" .. "/packer_compiled.lua",
