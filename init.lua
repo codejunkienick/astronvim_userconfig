@@ -195,11 +195,19 @@ local config = {
       { "folke/twilight.nvim" },
       { "folke/zen-mode.nvim" },
       {
-        "David-Kunz/jester",
+        "nvim-neotest/neotest",
+        requires = {
+          "haydenmeade/neotest-jest",
+        },
         config = function()
-          require("jester").setup {
-            path_to_jest_debug = "./node_modules/.bin/jest",
-            path_to_jest_run = "./node_modules/.bin/jest",
+          require("neotest").setup {
+            adapters = {
+              require "neotest-jest" {
+                jestCommand = "yarn test --",
+                jestConfigFile = "jest.config.ts",
+                env = { CI = true },
+              },
+            },
           }
         end,
       },
@@ -275,7 +283,7 @@ local config = {
       return config
     end,
     treesitter = {
-      ensure_installed = { "lua" },
+      ensure_installed = { "lua", "typescript", "tsx", "javascript" },
       indent = { enable = true },
     },
     ["null-ls"] = function(config)
@@ -307,7 +315,7 @@ local config = {
     register_mappings = {
       n = {
         ["<leader>"] = {
-          j = { name = "Jest" },
+          n = { name = "Neotest" },
           d = { name = "DAP" },
         },
       },
@@ -325,14 +333,11 @@ local config = {
       ["<C-s>"] = { ":w!<cr>", desc = "Save File" },
       -- Zen
       ["<leader>k"] = { function() require("zen-mode").toggle() end, desc = "Get into zen" },
-      -- Jest
-      ["<leader>jr"] = { function() require("jester").run() end, desc = "Jest: Run nearest test under the cursor" },
-      ["<leader>jR"] = {
-        function() require("jester").run_debug() end,
-        desc = "Jest: Debug Run nearest test under the cursor",
+      -- Neotest
+      ["<leader>nd"] = {
+        function() require("neotest").run.run { strategy = "dap" } end,
+        desc = "Debug Nearest Test",
       },
-      ["<leader>jf"] = { function() require("jester").run_file() end, desc = "Jest: Run file" },
-      ["<leader>jF"] = { function() require("jester").debug_file() end, desc = "Jest: Debug Run file" },
 
       -- DAP
       ["<leader>dU"] = { function() require("dapui").toggle() end, desc = "DAP UI toggle" },
