@@ -201,9 +201,22 @@ local config = {
         },
         config = function()
           require("neotest").setup {
+            icons = {
+              expanded = "",
+              child_prefix = "",
+              child_indent = "",
+              final_child_prefix = "",
+              non_collapsible = "",
+              collapsed = "",
+
+              passed = "",
+              running = "",
+              failed = "",
+              unknown = "",
+            },
             adapters = {
               require "neotest-jest" {
-                jestCommand = "yarn test --",
+                jestCommand = "yarn test --maxWorkers=50% ",
                 jestConfigFile = "jest.config.ts",
                 env = { CI = true },
               },
@@ -334,9 +347,25 @@ local config = {
       -- Zen
       ["<leader>k"] = { function() require("zen-mode").toggle() end, desc = "Get into zen" },
       -- Neotest
+      ["<leader>nr"] = {
+        function() require("neotest").run.run() end,
+        desc = "Run Nearest Test",
+      },
+      ["<leader>nR"] = {
+        function() require("neotest").run.run(vim.fn.expand "%") end,
+        desc = "Run Test File",
+      },
+      ["<leader>ns"] = {
+        function() require("neotest").summary.toggle() end,
+        desc = "Toggle Summary",
+      },
       ["<leader>nd"] = {
         function() require("neotest").run.run { strategy = "dap" } end,
         desc = "Debug Nearest Test",
+      },
+      ["<leader>nD"] = {
+        function() require("neotest").run.run { vim.fn.expand "%", strategy = "dap" } end,
+        desc = "Debug Test File",
       },
 
       -- DAP
