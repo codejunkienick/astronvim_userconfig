@@ -29,7 +29,7 @@ local config = {
   options = {
     opt = {
       spell = false,
-      signcolumn = "auto",
+      signcolumn = "number",
       relativenumber = false,
     },
     g = {
@@ -228,6 +228,8 @@ local config = {
             excluded_filetypes = { "toggleterm" },
             excluded_buftypes = { "nofile", "prompt", "popup", "quickfix" },
             treewidth = 40,
+            width = 100,
+            signcolumn = false,
           }
         end,
       },
@@ -274,13 +276,14 @@ local config = {
     end,
     treesitter = {
       ensure_installed = { "lua" },
+      indent = { enable = true },
     },
     ["null-ls"] = function(config)
       local null_ls = require "null-ls"
       config.sources = {
         null_ls.builtins.formatting.stylua,
-        null_ls.builtins.formatting.prettierd,
-        -- null_ls.builtins.formatting.eslint_d,
+        -- null_ls.builtins.formatting.prettierd,
+        null_ls.builtins.formatting.eslint_d,
         null_ls.builtins.diagnostics.eslint_d,
         null_ls.builtins.code_actions.eslint_d,
       }
