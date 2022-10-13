@@ -216,8 +216,9 @@ local config = {
             },
             adapters = {
               require "neotest-jest" {
-                jestCommand = "yarn test --maxWorkers=50% ",
+                jestCommand = "yarn jest",
                 jestConfigFile = "jest.config.ts",
+                cwd = function(path) return vim.fn.getcwd() end,
                 env = { CI = true },
               },
             },
