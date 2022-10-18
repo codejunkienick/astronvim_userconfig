@@ -1,4 +1,3 @@
-
 local function reverse(tbl)
   for i = 1, math.floor(#tbl / 2) do
     local j = #tbl - i + 1
@@ -106,7 +105,7 @@ return function(config)
         -- astronvim.get_icon gets the user interface icon for a closed folder with a space after it
         { provider = " " .. astronvim.get_icon "FolderClosed" },
         -- add padding after icon
-        padding = { right = 1, left =1  },
+        padding = { right = 1, left = 1 },
         -- set the foreground color to be used for the icon
         hl = { fg = "bg" },
         -- use the right separator and define the background color
@@ -116,7 +115,9 @@ return function(config)
       astronvim.status.component.builder {
         -- we only want filename to be used and we can change the fname
         -- function to get the current working directory name
-        { provider =  function() return  ' ' .. getWorkspaceFolder() .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t") .. ' ' end },
+        {
+          provider = function() return " " .. getWorkspaceFolder() .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t") .. " " end,
+        },
         -- disable all other elements of the file_info component
         padding = { left = 0, right = 0 },
         hl = { fg = "fg" },

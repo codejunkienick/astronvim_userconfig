@@ -1,21 +1,3 @@
-local function disable_formatting(client)
-  client.resolved_capabilities.document_formatting = false
-  client.resolved_capabilities.document_range_formatting = false
-end
-
-local function filter(arr, fn)
-  if type(arr) ~= "table" then return arr end
-
-  local filtered = {}
-  for k, v in pairs(arr) do
-    if fn(v, k, arr) then table.insert(filtered, v) end
-  end
-
-  return filtered
-end
-
-local function filterReactDTS(value) return string.match(value.targetUri, "react/index.d.ts") == nil end
-
 local config = {
   updater = {
     channel = "nightly",
@@ -47,41 +29,9 @@ local config = {
     virtual_text = true,
     underline = true,
   },
-  --
-  -- cmp = {
-  --   source_priority = {
-  --     nvim_lsp = 1000,
-  --     luasnip = 750,
-  --     buffer = 500,
-  --     path = 250,
-  --   },
-  -- },
 
   lsp = {
-    ["server-settings"] = {
-      tsserver = {
-        root_dir = require("lspconfig.util").find_git_ancestor,
-        handlers = {
-          ["textDocument/definition"] = function(err, result, method, ...)
-            if vim.tbl_islist(result) and #result > 1 then
-              local filtered_result = filter(result, filterReactDTS)
-              return vim.lsp.handlers["textDocument/definition"](err, filtered_result, method, ...)
-            end
-
-            vim.lsp.handlers["textDocument/definition"](err, result, method, ...)
-          end,
-        },
-      },
-      eslint = {
-        on_attach = disable_formatting,
-        settings = {
-          workingDirectories = {
-            { mode = "location" },
-          },
-        },
-        root_dir = require("lspconfig.util").find_git_ancestor,
-      },
-    },
+    ["server-settings"] = require "user/configs/lsp",
   },
 
   heirline = {
@@ -107,71 +57,12 @@ local config = {
       },
       {
         "mfussenegger/nvim-dap",
-        config = function()
-          local dap = require "dap"
-          -- dap.configurations.javascriptreact = {
-          --   {
-          --     type = "pwa-chrome",
-          --     request = "attach",
-          --     program = "${file}",
-          --     cwd = vim.fn.getcwd(),
-          --     sourceMaps = true,
-          --     protocol = "inspector",
-          --     port = 9222,
-          --     webRoot = "${workspaceFolder}",
-          --   },
-          -- }
-          dap.configurations.typescriptreact = {
-            {
-              type = "pwa-chrome",
-              outFiles = {
-                "${workspaceFolder}/packages/*/dist/remote-staging/*.js",
-                "!**/node_modules/**",
-              },
-              request = "attach",
-              program = "${file}",
-              cwd = vim.fn.getcwd(),
-              sourceMaps = true,
-              protocol = "inspector",
-              port = 9222,
-              webRoot = "${workspaceFolder}/packages/imdfront",
-            },
-          }
-        end,
+        config = require "user/plugins/dap",
       },
       {
         "rcarriga/nvim-dap-ui",
         requires = { "mfussenegger/nvim-dap" },
-        config = function()
-          require("dapui").setup {
-            layouts = {
-              {
-                elements = {
-                  -- Elements can be strings or table with id and size keys.
-                  { id = "scopes", size = 0.5 },
-                  "breakpoints",
-                  "stacks",
-                },
-                size = 50, -- 40 columns
-                position = "left",
-              },
-              {
-                elements = {
-                  "console",
-                },
-                size = 0.15, -- 25% of total lines
-                position = "bottom",
-              },
-              {
-                elements = {
-                  "repl",
-                },
-                size = 0.05, -- 25% of total lines
-                position = "bottom",
-              },
-            },
-          }
-        end,
+        config = require "user/plugins/dap-ui",
       },
       {
         "theHamsta/nvim-dap-virtual-text",
@@ -182,10 +73,7 @@ local config = {
         requires = { "mfussenegger/nvim-dap" },
         config = function()
           require("dap-vscode-js").setup {
-            -- node_path = "node", -- Path of node executable. Defaults to $NODE_PATH, and then "node"
-            -- debugger_path = "(runtimedir)/site/pack/packer/opt/vscode-js-debug", -- Path to vscode-js-debug installation.
-            -- debugger_cmd = { "js-debug-adapter" }, -- Command to use to launch the debug server. Takes precedence over `node_path` and `debugger_path`.
-            adapters = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" }, -- which adapters to register in nvim-dap
+            adapters = { "pwa-node", "pwa-chrome" },
           }
         end,
       },
@@ -199,31 +87,7 @@ local config = {
         requires = {
           "haydenmeade/neotest-jest",
         },
-        config = function()
-          require("neotest").setup {
-            icons = {
-              expanded = "",
-              child_prefix = "",
-              child_indent = "",
-              final_child_prefix = "",
-              non_collapsible = "",
-              collapsed = "",
-
-              passed = "",
-              running = "",
-              failed = "",
-              unknown = "",
-            },
-            adapters = {
-              require "neotest-jest" {
-                jestCommand = "yarn jest",
-                jestConfigFile = "jest.config.ts",
-                cwd = function(path) return vim.fn.getcwd() end,
-                env = { CI = true },
-              },
-            },
-          }
-        end,
+        config = require "user/plugins/neotest",
       },
       { "neomake/neomake" },
       {
@@ -273,29 +137,14 @@ local config = {
       config.mode = "text_symbol"
       return config
     end,
-    heirline = require "user/user_configs/heirline",
+    heirline = require "user/plugins/heirline",
     telescope = function(config)
       local telescope_actions = require "telescope.actions"
       config.defaults.mappings.n["<C-q>"] = telescope_actions.close
       config.defaults.mappings.i["<C-q>"] = telescope_actions.close
       return config
     end,
-    bufferline = function(config)
-      config.options.max_name_length = 18
-      config.options.max_prefix_length = 13
-      config.options.tab_size = 24
-      config.options.diagnostics = "nvim_lsp"
-      config.options.separator_style = "thick"
-      config.options.sort_by = "relative_directory"
-      config.options.name_formatter = function(buf)
-        if buf.name:match "index" then
-          return vim.fn.fnamemodify(buf.path, ":p:h:t") .. "/." .. vim.fn.fnamemodify(buf.path, ":e")
-        end
-        return buf.name
-      end
-      config.options.custom_filter = function(buf) return not vim.fn.bufname(buf):match "node_modules" end
-      return config
-    end,
+    bufferline = require "user/plugins/bufferline",
     treesitter = {
       ensure_installed = { "lua", "typescript", "tsx", "javascript" },
       indent = { enable = true },
@@ -326,7 +175,7 @@ local config = {
   },
 
   ["which-key"] = {
-    register_mappings = {
+    register = {
       n = {
         ["<leader>"] = {
           n = { name = "Neotest" },
@@ -344,6 +193,9 @@ local config = {
 
       -- General
       ["tn"] = { ":tabnew<cr>", desc = "New Tab" },
+      ["tc"] = { ":tabclose<cr>", desc = "Tab Close" },
+      ["tl"] = { ":tabnext<cr>", desc = "Tab Next" },
+      ["th"] = { ":tabnext<cr>", desc = "Tab Previous" },
       ["<C-s>"] = { ":w!<cr>", desc = "Save File" },
       -- Zen
       ["<leader>k"] = { function() require("zen-mode").toggle() end, desc = "Get into zen" },
@@ -370,9 +222,11 @@ local config = {
       },
 
       -- DAP
-      ["<leader>dU"] = { function() require("dapui").toggle() end, desc = "DAP UI toggle" },
+      ["<leader>du"] = { function() require("dapui").toggle() end, desc = "DAP UI toggle" },
+      ["<leader>dS"] = { function() require("dapui").float_element "stacks" end, desc = "DAP UI Stacks" },
+      ["<leader>dR"] = { function() require("dapui").float_element "repl" end, desc = "DAP UI Repl" },
       ["<leader>dt"] = { function() require("dap").toggle_breakpoint() end, desc = "Toggle Breakpoint" },
-      ["<leader>dR"] = { function() require("dap").run_to_cursor() end, desc = "Run To Cursor" },
+      ["<leader>dr"] = { function() require("dap").run_to_cursor() end, desc = "Run To Cursor" },
       ["<leader>di"] = { function() require("dap").step_into() end, desc = "Step Into" },
       ["<leader>do"] = { function() require("dap").step_out() end, desc = "Step Out" },
       ["<leader>db"] = { function() require("dap").step_back() end, desc = "Step Back" },
@@ -382,30 +236,12 @@ local config = {
       ["<leader>lT"] = { ":Trouble workspace_diagnostics<cr>", desc = "Open Trouble Workspace Diagnostics" },
       ["<leader>lt"] = { ":Trouble document_diagnostics<cr>", desc = "Open Trouble Document" },
     },
-    t = {
-      -- setting a mapping to false will disable it
-      -- ["<esc>"] = false,
-    },
+    t = {},
   },
 
-  -- This function is run last and is a good place to configuring
-  -- augroups/autocommands and custom filetypes also this just pure lua so
-  -- anything that doesn't fit in the normal config locations above can go here
   polish = function()
     vim.keymap.del("n", "<leader>d")
     vim.fn.sign_define("DapBreakpoint", { text = "🛑", texthl = "red", linehl = "", numhl = "" })
-    -- Set up custom filetypes
-    -- vim.filetype.add {
-    --   extension = {
-    --     foo = "fooscript",
-    --   },
-    --   filename = {
-    --     ["Foofile"] = "fooscript",
-    --   },
-    --   pattern = {
-    --     ["~/%.config/foo/.*"] = "fooscript",
-    --   },
-    -- }
   end,
 }
 
