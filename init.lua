@@ -190,6 +190,13 @@ local config = {
     n = {
       -- Git
       ["<leader>gd"] = { "<cmd>DiffviewFileHistory %<cr>", desc = "View File history (Diffview)" },
+      ["<leader>C"] = {
+        function()
+          require("bufferline.commands").close_in_direction "left"
+          require("bufferline.commands").close_in_direction "right"
+        end,
+        desc = "Close All Except Current",
+      },
 
       -- General
       ["tn"] = { ":tabnew<cr>", desc = "New Tab" },
