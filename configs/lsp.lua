@@ -29,7 +29,7 @@ return {
         vim.lsp.handlers["textDocument/definition"](err, result, method, ...)
       end,
     },
-    on_attach = require("aerial").on_attach,
+    -- on_attach = require("aerial").on_attach,
   },
   eslint = {
     on_attach = disable_formatting,

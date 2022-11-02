@@ -1,9 +1,15 @@
 local config = {
   updater = {
-    channel = "nightly",
-    branch = "nightly",
-    auto_reload = false,
-    auto_quit = false,
+    remote = "origin", -- remote to use
+    channel = "nightly", -- "stable" or "nightly"
+    version = "latest", -- "latest", tag name, or regex search like "v1.*" to only do updates before v2 (STABLE ONLY)
+    branch = "main", -- branch name (NIGHTLY ONLY)
+    commit = nil, -- commit hash (NIGHTLY ONLY)
+    pin_plugins = nil, -- nil, true, false (nil will pin plugins on stable only)
+    skip_prompts = false, -- skip prompts about breaking changes
+    show_changelog = true, -- show the changelog after performing an update
+    auto_reload = false, -- automatically reload and sync packer after a successful update
+    auto_quit = false, -- automatically quit the current session after a successful update
   },
 
   colorscheme = "onedark",
@@ -21,7 +27,7 @@ local config = {
       status_diagnostics_enabled = true,
       instant_username = "Sneaky",
       neomake_open_list = 2,
-      mapleader = " ",
+      -- mapleader = " ",
     },
   },
 
@@ -77,8 +83,8 @@ local config = {
           }
         end,
       },
-      { "tzachar/cmp-tabnine", run = "./install.sh", requires = "hrsh7th/nvim-cmp" },
-      { "jbyuki/instant.nvim" },
+      -- { "tzachar/cmp-tabnine", run = "./install.sh", requires = "hrsh7th/nvim-cmp" },
+      -- { "jbyuki/instant.nvim" },
       { "sindrets/diffview.nvim" },
       { "folke/twilight.nvim" },
       { "folke/zen-mode.nvim" },
@@ -89,7 +95,7 @@ local config = {
         },
         config = require "user/plugins/neotest",
       },
-      { "neomake/neomake" },
+      -- { "neomake/neomake" },
       {
         "kevinhwang91/nvim-bqf",
         config = function()
@@ -245,7 +251,6 @@ local config = {
       ["<leader>lT"] = { ":Trouble workspace_diagnostics<cr>", desc = "Open Trouble Workspace Diagnostics" },
       ["<leader>lt"] = { ":Trouble document_diagnostics<cr>", desc = "Open Trouble Document" },
     },
-    t = {},
   },
 
   polish = function()
