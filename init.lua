@@ -37,6 +37,21 @@ local config = {
   },
 
   lsp = {
+    formatting = {
+      filter = function(client)
+        -- only enable null-ls for javascript files
+        if
+          vim.bo.filetype == "javascript"
+          or vim.bo.filetype == "typescript"
+          or vim.bo.filetype == "typescriptreact"
+        then
+          return client.name == "null-ls"
+        end
+
+        -- enable all other clients
+        return true
+      end,
+    },
     ["server-settings"] = require "user/configs/lsp",
   },
 
