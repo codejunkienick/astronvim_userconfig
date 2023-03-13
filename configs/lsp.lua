@@ -14,30 +14,28 @@ local function filter(arr, fn)
   return filtered
 end
 
-local function filterReactDTS(value) return string.match(value.targetUri, "react/index.d.ts") == nil end
+local function filterReactDTS(value) return string.match(value.targetUri, "react%") == nil end
 
 return {
-  tsserver = {
-    root_dir = require("lspconfig.util").find_git_ancestor,
-    handlers = {
-      ["textDocument/definition"] = function(err, result, method, ...)
-        if vim.tbl_islist(result) and #result > 1 then
-          local filtered_result = filter(result, filterReactDTS)
-          return vim.lsp.handlers["textDocument/definition"](err, filtered_result, method, ...)
-        end
+  tsserver = function(opts) 
+    opts.root_dir = require("lspconfig").util.find_git_ancestor
+    opts.handlers = { ["textDocument/definition"] = function(err, result, method, ...)
+      if vim.tbl_islist(result) and #result > 2 then
+        local filtered_result = filter(result, filterReactDTS)
+        return vim.lsp.handlers["textDocument/definition"](err, filtered_result, method, ...)
+      end
 
-        vim.lsp.handlers["textDocument/definition"](err, result, method, ...)
-      end,
-    },
-    -- on_attach = require("aerial").on_attach,
-  },
-  eslint = {
-    on_attach = disable_formatting,
-    settings = {
+      vim.lsp.handlers["textDocument/definition"](err, result, method, ...)
+    end }
+    return opts
+  end,
+  eslint = function(opts) 
+    opts.on_attach = disable_formatting
+    opts.settings = {
       workingDirectories = {
         { mode = "location" },
       },
-    },
-    root_dir = require("lspconfig.util").find_git_ancestor,
-  },
+    }
+    opts.root_dir = require("lspconfig").util.find_git_ancestor
+  end,
 }
