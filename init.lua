@@ -73,122 +73,131 @@ local config = {
     },
   },
   plugins = {
-      {
-        "microsoft/vscode-js-debug",
-        lazy = true,
-        build = "npm install --legacy-peer-deps && npm run compile",
-      },
-      {
-        "mfussenegger/nvim-dap",
-        config = require "user/configs/dap",
-      },
-      {
-        "rcarriga/nvim-dap-ui",
-        dependencies = { "mfussenegger/nvim-dap" },
-        config = require "user/configs/dap-ui",
-      },
-      {
-        "theHamsta/nvim-dap-virtual-text",
-        config = function() require("nvim-dap-virtual-text").setup() end,
-      },
-      {
-        "mxsdev/nvim-dap-vscode-js",
-        dependencies = { "mfussenegger/nvim-dap" },
-        config = function()
-          require("dap-vscode-js").setup {
-            adapters = { "pwa-node", "pwa-chrome" },
-          }
-        end,
-      },
-      { "sindrets/diffview.nvim" },
-      { "folke/twilight.nvim" },
-      { "folke/zen-mode.nvim" },
-      {
-        "nvim-neotest/neotest",
-        dependencies = {
-          "haydenmeade/neotest-jest",
-        },
-        config = require "user/configs/neotest",
-      },
-      {
-        "kevinhwang91/nvim-bqf",
-        config = function()
-          require("bqf").setup {
-            auto_enable = true,
-            auto_resize_height = true, -- highly recommended enable
-          }
-        end,
-      },
-      {
-        "folke/trouble.nvim",
-        config = function() require("trouble").setup {} end,
-      },
-      {
-        "nvim-treesitter/nvim-treesitter-context",
-      },
-      {
-        "beauwilliams/focus.nvim",
-        config = function()
-          require("focus").setup {
-            excluded_filetypes = { "toggleterm" },
-            excluded_buftypes = { "nofile", "prompt", "popup", "quickfix" },
-            treewidth = 40,
-            width = 100,
-            signcolumn = false,
-          }
-        end,
-      },
-      {
-        "ggandor/leap.nvim",
-        config = function() require("leap").add_default_mappings() end,
-      },
-      {
-        "navarasu/onedark.nvim",
-        name = "onedark",
-        config = function()
-          require("onedark").setup {
-            style = "dark",
-          }
-          require("onedark").load()
-        end,
-      },
-      {
-        "jose-elias-alvarez/null-ls.nvim",
-        opts = function(_, config)
-          local null_ls = require "null-ls"
-          config.sources = {
-            null_ls.builtins.formatting.stylua,
-            -- null_ls.builtins.formatting.prettierd,
-            null_ls.builtins.formatting.eslint_d,
-            null_ls.builtins.diagnostics.eslint_d,
-            null_ls.builtins.code_actions.eslint_d,
-          }
-
-          return config
-        end,
-      }
+    {
+      "microsoft/vscode-js-debug",
+      lazy = true,
+      build = "npm install --legacy-peer-deps && npm run compile",
     },
-    -- lspkind = function(config)
-    --   config.mode = "text_symbol"
-    --   return config
-    -- end,
-    -- -- heirline = require "user/configs/heirline",
-    -- telescope = function(config)
-    --   local telescope_actions = require "telescope.actions"
-    --   config.defaults.mappings.n["<C-q>"] = telescope_actions.close
-    --   config.defaults.mappings.n["d"] = telescope_actions.delete_buffer
-    --   config.defaults.mappings.i["<C-q>"] = telescope_actions.close
-    --   return config
-    -- end,
-    -- -- bufferline = require "user/plugins/bufferline",
-    -- -- treesitter = {
-    -- --   ensure_installed = { "lua", "typescript", "tsx", "javascript" },
-    -- --   indent = { enable = true },
-    -- -- },
-    -- ["neo-tree"] = function(config)
-    --   config.close_if_last_window = false
-    --   return config
-    -- end,
+    {
+      "mfussenegger/nvim-dap",
+      config = require "user/configs/dap",
+    },
+    {
+      "rcarriga/nvim-dap-ui",
+      dependencies = { "mfussenegger/nvim-dap" },
+      config = require "user/configs/dap-ui",
+    },
+    {
+      "theHamsta/nvim-dap-virtual-text",
+      config = function() require("nvim-dap-virtual-text").setup() end,
+    },
+    {
+      "mxsdev/nvim-dap-vscode-js",
+      dependencies = { "mfussenegger/nvim-dap" },
+      config = function()
+        require("dap-vscode-js").setup {
+          adapters = { "pwa-node", "pwa-chrome" },
+        }
+      end,
+    },
+    { "sindrets/diffview.nvim" },
+    { "folke/twilight.nvim" },
+    { "folke/zen-mode.nvim" },
+    {
+      "nvim-neotest/neotest",
+      dependencies = {
+        "haydenmeade/neotest-jest",
+      },
+      config = require "user/configs/neotest",
+    },
+    {
+      "kevinhwang91/nvim-bqf",
+      config = function()
+        require("bqf").setup {
+          auto_enable = true,
+          auto_resize_height = true, -- highly recommended enable
+        }
+      end,
+    },
+    {
+      "folke/trouble.nvim",
+      config = function() require("trouble").setup {} end,
+    },
+    {
+      "nvim-treesitter/nvim-treesitter-context",
+    },
+    {
+      "beauwilliams/focus.nvim",
+      config = function()
+        require("focus").setup {
+          excluded_filetypes = { "toggleterm" },
+          excluded_buftypes = { "nofile", "prompt", "popup", "quickfix" },
+          treewidth = 40,
+          width = 100,
+          signcolumn = false,
+        }
+      end,
+    },
+    {
+      "ggandor/leap.nvim",
+      config = function() require("leap").add_default_mappings() end,
+    },
+    {
+      "navarasu/onedark.nvim",
+      name = "onedark",
+      config = function()
+        require("onedark").setup {
+          style = "dark",
+        }
+        require("onedark").load()
+      end,
+    },
+    {
+      "jose-elias-alvarez/null-ls.nvim",
+      opts = function(_, config)
+        local null_ls = require "null-ls"
+        config.sources = {
+          null_ls.builtins.formatting.stylua,
+          -- null_ls.builtins.formatting.prettierd,
+          null_ls.builtins.formatting.eslint_d,
+          null_ls.builtins.diagnostics.eslint_d,
+          null_ls.builtins.code_actions.eslint_d,
+        }
+
+        return config
+      end,
+    },
+    {
+      "nvim-telescope/telescope.nvim",
+      opts = function(_, config)
+        local telescope_actions = require "telescope.actions"
+        config.defaults.mappings.n["<C-q>"] = telescope_actions.close
+        config.defaults.mappings.n["d"] = telescope_actions.delete_buffer
+        config.defaults.mappings.i["<C-q>"] = telescope_actions.close
+        return config
+      end,
+    },
+    {
+      "nvim-neo-tree/neo-tree.nvim",
+      opts = function(_, config)
+        config.close_if_last_window = false
+        return config
+      end,
+    },
+    {
+      "onsails/lspkind.nvim",
+      opts = function(_, config)
+        config.mode = "text_symbol"
+        return config
+      end,
+    },
+  },
+  -- -- heirline = require "user/configs/heirline",
+  -- -- bufferline = require "user/plugins/bufferline",
+  -- treesitter = {
+  --   ensure_installed = { "lua", "typescript", "tsx", "javascript" },
+  --   indent = { enable = true },
+  -- },
   -- luasnip = {
   --   vscode_snippet_paths = {},
   --   filetype_extend = {
