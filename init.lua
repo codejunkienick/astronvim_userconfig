@@ -100,7 +100,12 @@ local config = {
         }
       end,
     },
-    { "sindrets/diffview.nvim" },
+    {
+      "sindrets/diffview.nvim",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+      },
+    },
     { "folke/twilight.nvim" },
     { "folke/zen-mode.nvim" },
     {
@@ -140,7 +145,9 @@ local config = {
     },
     {
       "ggandor/leap.nvim",
-      config = function() require("leap").add_default_mappings() end,
+      dependencies = {
+        "tpope/vim-repeat",
+      },
     },
     {
       "navarasu/onedark.nvim",
@@ -217,6 +224,16 @@ local config = {
       --   desc = "Close All Except Current",
       -- },
       -- General
+      s = false,
+      S = false,
+      L = {
+        function() require("astronvim.utils.buffer").nav(vim.v.count > 0 and vim.v.count or 1) end,
+        desc = "Next buffer",
+      },
+      H = {
+        function() require("astronvim.utils.buffer").nav(-(vim.v.count > 0 and vim.v.count or 1)) end,
+        desc = "Previous buffer",
+      },
       ["tn"] = { ":tabnew<cr>", desc = "New Tab" },
       ["tc"] = { ":tabclose<cr>", desc = "Tab Close" },
       ["tl"] = { ":tabnext<cr>", desc = "Tab Next" },
@@ -265,6 +282,7 @@ local config = {
   polish = function()
     -- vim.keymap.del("n", "<leader>d")
     vim.fn.sign_define("DapBreakpoint", { text = "🛑", texthl = "red", linehl = "", numhl = "" })
+    require("leap").add_default_mappings()
   end,
 }
 
