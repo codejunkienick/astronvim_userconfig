@@ -6,6 +6,7 @@ neovim@^0.8
 
 ### Clone the repository
 
+
 ```
 git clone https://github.com/AstroNvim/AstroNvim ~/.config/nvim
 nvim +PackerSync

@@ -74,6 +74,42 @@ local config = {
   },
   plugins = {
     {
+      "jcdickinson/codeium.nvim",
+      lazy = false,
+      -- commit = "b1ff0d6c993e3d87a4362d2ccd6c660f7444599f",
+      config = true,
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "hrsh7th/nvim-cmp",
+      },
+      config = function() require("codeium").setup {} end,
+    },
+    { -- override nvim-cmp plugin
+      "hrsh7th/nvim-cmp",
+      -- override the options table that is used in the `require("cmp").setup()` call
+      opts = function(_, opts)
+        -- opts parameter is the default options table
+        -- the function is lazy loaded so cmp is able to be required
+        opts.sources = {
+          { name = "nvim_lsp", priority = 1000 },
+          { name = "luasnip", priority = 750 },
+          {
+            name = "codeium",
+            priority = 600,
+          },
+          { name = "buffer", priority = 500 },
+          { name = "path", priority = 250 },
+        }
+
+        -- return the new table to be used
+        return opts
+      end,
+    },
+    -- {
+    --   "Exafunction/codeium.vim",
+    --   lazy = false,
+    -- },
+    {
       "microsoft/vscode-js-debug",
       lazy = true,
       build = "npm install --legacy-peer-deps && npm run compile",
