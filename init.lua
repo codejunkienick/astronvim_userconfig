@@ -1,15 +1,15 @@
 local config = {
   updater = {
-    remote = "origin",     -- remote to use
-    channel = "stable",    -- "stable" or "nightly"
-    version = "latest",    -- "latest", tag name, or regex search like "v1.*" to only do updates before v2 (STABLE ONLY)
-    branch = "main",       -- branch name (NIGHTLY ONLY)
-    commit = nil,          -- commit hash (NIGHTLY ONLY)
-    pin_plugins = nil,     -- nil, true, false (nil will pin plugins on stable only)
-    skip_prompts = false,  -- skip prompts about breaking changes
+    remote = "origin", -- remote to use
+    channel = "stable", -- "stable" or "nightly"
+    version = "latest", -- "latest", tag name, or regex search like "v1.*" to only do updates before v2 (STABLE ONLY)
+    branch = "main", -- branch name (NIGHTLY ONLY)
+    commit = nil, -- commit hash (NIGHTLY ONLY)
+    pin_plugins = nil, -- nil, true, false (nil will pin plugins on stable only)
+    skip_prompts = false, -- skip prompts about breaking changes
     show_changelog = true, -- show the changelog after performing an update
-    auto_reload = false,   -- automatically reload and sync packer after a successful update
-    auto_quit = false,     -- automatically quit the current session after a successful update
+    auto_reload = false, -- automatically reload and sync packer after a successful update
+    auto_quit = false, -- automatically quit the current session after a successful update
   },
   options = {
     opt = {
@@ -37,9 +37,9 @@ local config = {
       filter = function(client)
         -- only enable null-ls for javascript files
         if
-            vim.bo.filetype == "javascript"
-            or vim.bo.filetype == "typescript"
-            or vim.bo.filetype == "typescriptreact"
+          vim.bo.filetype == "javascript"
+          or vim.bo.filetype == "typescript"
+          or vim.bo.filetype == "typescriptreact"
         then
           return client.name == "null-ls"
         end
@@ -178,6 +178,11 @@ local config = {
       "nvim-telescope/telescope.nvim",
       opts = function(_, config)
         local telescope_actions = require "telescope.actions"
+        config.pickers = {
+          lsp_definitions = {
+            file_ignore_patterns = { "react/index.d.ts" },
+          },
+        }
         config.defaults.mappings.n["<C-q>"] = telescope_actions.close
         config.defaults.mappings.n["d"] = telescope_actions.delete_buffer
         config.defaults.mappings.i["<C-q>"] = telescope_actions.close
