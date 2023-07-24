@@ -100,6 +100,14 @@ local config = {
           { name = "buffer", priority = 500 },
           { name = "path", priority = 250 },
         }
+        opts.formatting = {
+          format = require("lspkind").cmp_format {
+            mode = "symbol_text",
+            maxwidth = 50,
+            ellipsis_char = "...",
+            symbol_map = { Codeium = "" },
+          },
+        }
 
         -- return the new table to be used
         return opts
