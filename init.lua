@@ -24,6 +24,7 @@ local config = {
       status_diagnostics_enabled = true,
       instant_username = "Sneaky",
       neomake_open_list = 2,
+      rustaceanvim = {},
       -- mapleader = " ",
     },
   },
@@ -33,6 +34,27 @@ local config = {
     underline = true,
   },
   lsp = {
+    setup_handlers = {
+      -- add custom handler
+      rust_analyzer = function(_, opts)
+        opts.checkOnSave = {
+          command = "clippy",
+        }
+        require("rust-tools").setup {
+
+          server = opts,
+        }
+      end,
+    },
+    -- setup_handlers = {
+    --   rust_analyzer = function(_, opts)
+    --     opts.checkOnSave = {
+    --       command = "clippy",
+    --     }
+    --     return opts
+    --   end,
+    -- },
+    timeout_ms = 5000,
     formatting = {
       filter = function(client)
         -- only enable null-ls for javascript files
@@ -48,6 +70,7 @@ local config = {
         return true
       end,
     },
+    automatic_installation = { exclude = { "rust_analyzer", "solargraph" } },
     config = require "user/configs/lsp",
   },
   heirline = {
@@ -73,20 +96,33 @@ local config = {
     },
   },
   plugins = {
+    "simrat39/rust-tools.nvim",
+    {
+      "williamboman/mason-lspconfig.nvim",
+      opts = {
+        ensure_installed = { "rust_analyzer" },
+        automatic_installation = { exclude = { "rust_analyzer" } },
+      },
+    },
     {
       "jcdickinson/codeium.nvim",
       lazy = false,
-      -- commit = "b1ff0d6c993e3d87a4362d2ccd6c660f7444599f",
-      config = true,
       dependencies = {
         "nvim-lua/plenary.nvim",
         "hrsh7th/nvim-cmp",
       },
       config = function() require("codeium").setup {} end,
     },
+    -- {
+    --   "mrcjkb/rustaceanvim",
+    --   lazy = false,
+    --   version = "^4", -- Recommended
+    --   ft = { "rust" },
+    -- },
     { -- override nvim-cmp plugin
       "hrsh7th/nvim-cmp",
       -- override the options table that is used in the `require("cmp").setup()` call
+      commit = "c4e491a87eeacf0408902c32f031d802c7eafce8",
       opts = function(_, opts)
         -- opts parameter is the default options table
         -- the function is lazy loaded so cmp is able to be required
@@ -113,10 +149,6 @@ local config = {
         return opts
       end,
     },
-    -- {
-    --   "Exafunction/codeium.vim",
-    --   lazy = false,
-    -- },
     {
       "microsoft/vscode-js-debug",
       lazy = true,
@@ -156,6 +188,7 @@ local config = {
       "nvim-neotest/neotest",
       dependencies = {
         "haydenmeade/neotest-jest",
+        "rouge8/neotest-rust",
       },
       config = require "user/configs/neotest",
     },
@@ -170,82 +203,126 @@ local config = {
     },
     {
       "folke/trouble.nvim",
-      config = function() require("trouble").setup {} end,
+      lazy = false,
+      dependencies = { "nvim-tree/nvim-web-devicons" },
+      opts = {},
     },
     {
       "nvim-treesitter/nvim-treesitter-context",
     },
     {
-      "beauwilliams/focus.nvim",
+      "nvim-focus/focus.nvim",
+      lazy = false,
       config = function()
         require("focus").setup {
-          excluded_filetypes = { "toggleterm" },
-          excluded_buftypes = { "nofile", "prompt", "popup", "quickfix" },
-          treewidth = 40,
-          width = 100,
-          signcolumn = false,
+          enable = true,
+          commads = true,
         }
       end,
+      {
+        "Lilja/zellij.nvim",
+        lazy = false,
+        config = function()
+          require("zellij").setup {
+            replaceVimWindowNavigationKeybinds = true,
+          }
+        end,
+      },
+      {
+        "navarasu/onedark.nvim",
+        name = "onedark",
+        config = function()
+          require("onedark").setup {
+            style = "dark",
+          }
+          require("onedark").load()
+        end,
+      },
+      {
+        "jose-elias-alvarez/null-ls.nvim",
+        opts = function(_, config)
+          local null_ls = require "null-ls"
+          config.sources = {
+            null_ls.builtins.formatting.stylua,
+            null_ls.builtins.formatting.prettierd,
+            -- null_ls.builtins.formatting.eslint_d,
+            null_ls.builtins.diagnostics.eslint_d,
+            null_ls.builtins.code_actions.eslint_d,
+            null_ls.builtins.diagnostics.markdownlint,
+          }
+
+          return config
+        end,
+      },
+      {
+        "nvim-telescope/telescope.nvim",
+        opts = function(_, config)
+          local telescope_actions = require "telescope.actions"
+          config.pickers = {
+            lsp_definitions = {
+              file_ignore_patterns = { "react/index.d.ts" },
+            },
+          }
+          config.defaults.mappings.n["<C-q>"] = telescope_actions.close
+          config.defaults.mappings.n["d"] = telescope_actions.delete_buffer
+          config.defaults.mappings.i["<C-q>"] = telescope_actions.close
+          return config
+        end,
+      },
+      {
+        "nvim-neo-tree/neo-tree.nvim",
+        opts = function(_, config)
+          config.close_if_last_window = false
+          return config
+        end,
+      },
+      {
+        "onsails/lspkind.nvim",
+        opts = function(_, config)
+          config.mode = "text_symbol"
+          return config
+        end,
+      },
     },
     {
       "ggandor/leap.nvim",
+      lazy = false,
       dependencies = {
         "tpope/vim-repeat",
       },
     },
     {
-      "navarasu/onedark.nvim",
-      name = "onedark",
-      config = function()
-        require("onedark").setup {
-          style = "dark",
-        }
-        require("onedark").load()
-      end,
-    },
-    {
-      "jose-elias-alvarez/null-ls.nvim",
-      opts = function(_, config)
-        local null_ls = require "null-ls"
-        config.sources = {
-          null_ls.builtins.formatting.stylua,
-          -- null_ls.builtins.formatting.prettierd,
-          null_ls.builtins.formatting.eslint_d,
-          null_ls.builtins.diagnostics.eslint_d,
-          null_ls.builtins.code_actions.eslint_d,
-        }
+      "epwalsh/obsidian.nvim",
+      version = "*", -- recommended, use latest release instead of latest commit
+      lazy = true,
+      ft = "markdown",
+      -- Replace the above line with this if you only want to load obsidian.nvim for markdown files in your vault:
+      -- event = {
+      --   -- If you want to use the home shortcut '~' here you need to call 'vim.fn.expand'.
+      --   -- E.g. "BufReadPre " .. vim.fn.expand "~" .. "/my-vault/**.md"
+      --   "BufReadPre path/to/my-vault/**.md",
+      --   "BufNewFile path/to/my-vault/**.md",
+      -- },
+      dependencies = {
+        -- Required.
+        "nvim-lua/plenary.nvim",
 
-        return config
-      end,
-    },
-    {
-      "nvim-telescope/telescope.nvim",
-      opts = function(_, config)
-        local telescope_actions = require "telescope.actions"
-        config.pickers = {
-          lsp_definitions = {
-            file_ignore_patterns = { "react/index.d.ts" },
+        -- see below for full list of optional dependencies 👇
+      },
+      opts = {
+        workspaces = {
+          {
+            name = "personal",
+            path = "~/vaults/personal",
           },
-        }
-        config.defaults.mappings.n["<C-q>"] = telescope_actions.close
-        config.defaults.mappings.n["d"] = telescope_actions.delete_buffer
-        config.defaults.mappings.i["<C-q>"] = telescope_actions.close
-        return config
-      end,
-    },
-    {
-      "nvim-neo-tree/neo-tree.nvim",
-      opts = function(_, config)
-        config.close_if_last_window = false
-        return config
-      end,
-    },
-    {
-      "onsails/lspkind.nvim",
-      opts = function(_, config)
-        config.mode = "text_symbol"
-        return config
-      end,
+          {
+            name = "work",
+            path = "~/vaults/work",
+          },
+        },
+
+        -- see below for full list of options 👇
+      },
     },
   },
   -- -- heirline = require "user/configs/heirline",
@@ -332,6 +409,35 @@ local config = {
     -- vim.keymap.del("n", "<leader>d")
     vim.fn.sign_define("DapBreakpoint", { text = "🛑", texthl = "red", linehl = "", numhl = "" })
     require("leap").add_default_mappings()
+
+    local ignore_filetypes = { "neo-tree" }
+    local ignore_buftypes = { "nofile", "prompt", "popup" }
+
+    local augroup = vim.api.nvim_create_augroup("FocusDisable", { clear = true })
+
+    vim.api.nvim_create_autocmd("WinEnter", {
+      group = augroup,
+      callback = function(_)
+        if vim.tbl_contains(ignore_buftypes, vim.bo.buftype) then
+          vim.w.focus_disable = true
+        else
+          vim.w.focus_disable = false
+        end
+      end,
+      desc = "Disable focus autoresize for BufType",
+    })
+
+    vim.api.nvim_create_autocmd("FileType", {
+      group = augroup,
+      callback = function(_)
+        if vim.tbl_contains(ignore_filetypes, vim.bo.filetype) then
+          vim.b.focus_disable = true
+        else
+          vim.b.focus_disable = false
+        end
+      end,
+      desc = "Disable focus autoresize for FileType",
+    })
   end,
 }
 

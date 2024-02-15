@@ -14,6 +14,9 @@ return function()
       unknown = "",
     },
     adapters = {
+      require "neotest-rust" {
+        args = { "--no-capture" },
+      },
       require "neotest-jest" {
         jestCommand = "yarn test",
         jestConfigFile = "jest.config.ts",

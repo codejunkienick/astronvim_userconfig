@@ -17,19 +17,21 @@ end
 local function filterReactDTS(value) return string.match(value.targetUri, "react%") == nil end
 
 return {
-  tsserver = function(opts) 
+  tsserver = function(opts)
     opts.root_dir = require("lspconfig").util.find_git_ancestor
-    opts.handlers = { ["textDocument/definition"] = function(err, result, method, ...)
-      if vim.tbl_islist(result) and #result > 2 then
-        local filtered_result = filter(result, filterReactDTS)
-        return vim.lsp.handlers["textDocument/definition"](err, filtered_result, method, ...)
-      end
+    opts.handlers = {
+      ["textDocument/definition"] = function(err, result, method, ...)
+        if vim.tbl_islist(result) and #result > 2 then
+          local filtered_result = filter(result, filterReactDTS)
+          return vim.lsp.handlers["textDocument/definition"](err, filtered_result, method, ...)
+        end
 
-      vim.lsp.handlers["textDocument/definition"](err, result, method, ...)
-    end }
+        vim.lsp.handlers["textDocument/definition"](err, result, method, ...)
+      end,
+    }
     return opts
   end,
-  eslint = function(opts) 
+  eslint = function(opts)
     opts.on_attach = disable_formatting
     opts.settings = {
       workingDirectories = {
